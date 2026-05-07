@@ -21,5 +21,33 @@ def ram_usage():
         "percent": memory.percent
     }
 
+@app.route('/api/disk')
+def disk_usage():
+    disk = psutil.disk_usage('/')
+
+    return {
+        "total": round(disk.total / (1024 ** 3), 2),
+        "used": round(disk.used / (1024 ** 3), 2),
+        "percent": disk.percent
+    }
+
+@app.route('/api/processes')
+def top_processes():
+    processes = []
+
+    for proc in psutil.process_iter(['pid', 'name', 'memory_percent']):
+        try:
+            processes.append(proc.info)
+        except:
+            pass
+
+    processes = sorted(
+        processes,
+        key=lambda x: x['memory_percent'],
+        reverse=True
+    )
+
+    return processes[:5]
+
 if __name__ == '__main__':
     app.run(debug=True)
