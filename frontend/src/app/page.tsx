@@ -37,16 +37,16 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const cpuRes = await fetch("http://127.0.0.1:5000/api/cpu");
+      const cpuRes = await fetch("http://localhost:5000/api/cpu");
       const cpuData = await cpuRes.json();
 
-      const ramRes = await fetch("http://127.0.0.1:5000/api/ram");
+      const ramRes = await fetch("http://localhost:5000/api/ram");
       const ramData = await ramRes.json();
 
-      const diskRes = await fetch("http://127.0.0.1:5000/api/disk");
+      const diskRes = await fetch("http://localhost:5000/api/disk");
       const diskData = await diskRes.json();
 
-      const processRes = await fetch("http://127.0.0.1:5000/api/processes");
+      const processRes = await fetch("http://localhost:5000/api/processes");
       const processData = await processRes.json();
 
       setCpu(cpuData.cpu_usage);
