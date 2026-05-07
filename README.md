@@ -129,18 +129,6 @@ http://localhost:5000
 
 ---
 
-# Screenshots
-
-## Dashboard UI
-
-_Add screenshot here_
-
-## Docker Containers Running
-
-_Add screenshot here_
-
----
-
 # Future Improvements
 
 - Browser extension integration
