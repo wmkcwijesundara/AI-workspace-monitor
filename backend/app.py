@@ -1,9 +1,10 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cors import CORS
 import psutil
 
 app = Flask(__name__)
 CORS(app)
+reported_metrics = []
 
 @app.route('/api/cpu')
 def cpu_usage():
@@ -48,6 +49,26 @@ def top_processes():
     )
 
     return processes[:5]
+
+
+@app.route('/api/report', methods=['POST'])
+def receive_report():
+
+    data = request.json
+
+    reported_metrics.append(data)
+
+    return {
+        "status": "received"
+    }
+
+
+@app.route('/api/agents')
+def get_agents():
+
+    return {
+        "agents": reported_metrics
+    }
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
