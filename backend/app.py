@@ -4,7 +4,7 @@ import psutil
 
 app = Flask(__name__)
 CORS(app)
-reported_metrics = []
+reported_metrics = {}
 
 @app.route('/api/cpu')
 def cpu_usage():
@@ -56,7 +56,9 @@ def receive_report():
 
     data = request.json
 
-    reported_metrics.append(data)
+    hostname = data.get("hostname")
+
+    reported_metrics[hostname] = data
 
     return {
         "status": "received"
@@ -67,7 +69,7 @@ def receive_report():
 def get_agents():
 
     return {
-        "agents": reported_metrics
+        "agents": list(reported_metrics.values())
     }
 
 if __name__ == '__main__':

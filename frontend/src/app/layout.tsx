@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+});
 
 // Configure Plus Jakarta Sans with the specific weights we need
 const jakarta = Plus_Jakarta_Sans({
@@ -24,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${jakarta.variable} h-full antialiased`}
     >
-      <body className={`${jakarta.className} min-h-full flex flex-col`}>
+      <body className={`${inter.className} min-h-full flex flex-col`}>
         {children}
       </body>
     </html>
