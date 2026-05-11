@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 import psutil
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -70,6 +71,18 @@ def get_agents():
 
     return {
         "agents": list(reported_metrics.values())
+    }
+
+@app.route('/api/uptime')
+def uptime():
+
+    uptime_seconds = time.time() - psutil.boot_time()
+
+    hours = int(uptime_seconds // 3600)
+    minutes = int((uptime_seconds % 3600) // 60)
+
+    return {
+        "uptime": f"{hours}h {minutes}m"
     }
 
 if __name__ == '__main__':

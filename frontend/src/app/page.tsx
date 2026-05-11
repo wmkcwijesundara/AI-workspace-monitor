@@ -44,6 +44,7 @@ export default function Home() {
   const [processes, setProcesses] = useState<ProcessData[]>([]);
   const [cpuHistory, setCpuHistory] = useState<HistoryData[]>([]);
   const [agents, setAgents] = useState<AgentData[]>([]);
+  const [uptime, setUptime] = useState<string>("");
 
   const fetchData = async () => {
     try {
@@ -62,11 +63,15 @@ export default function Home() {
       const agentsRes = await fetch(`${API_URL}/api/agents`);
       const agentsData = await agentsRes.json();
 
+      const uptimeRes = await fetch(`${API_URL}/api/uptime`);
+      const uptimeData = await uptimeRes.json();
+
       setCpu(cpuData.cpu_usage);
       setRam(ramData);
       setDisk(diskData);
       setProcesses(processData);
       setAgents(agentsData.agents);
+      setUptime(uptimeData.uptime);
 
       setCpuHistory((prev) => {
         const updated = [
@@ -123,7 +128,7 @@ export default function Home() {
         </header>
 
         {/* METRIC CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 
           {/* CPU */}
           <div className="bg-[#121A2B] border border-white/5 rounded-3xl p-6 shadow-2xl shadow-black/20">
@@ -172,6 +177,23 @@ export default function Home() {
 
           </div>
 
+          {/* UPTIME */}
+          <div className="bg-[#121A2B] border border-white/5 rounded-3xl p-6 shadow-2xl shadow-black/20">
+
+            <p className="text-slate-400 text-sm mb-4">
+              System Uptime
+            </p>
+
+            <h2 className="text-4xl font-bold text-emerald-400">
+              {uptime || "--"}
+            </h2>
+
+            <p className="text-slate-400 mt-4 text-sm">
+              Host machine runtime
+            </p>
+
+          </div>
+
         </div>
 
         {/* CONNECTED AGENTS */}
@@ -197,11 +219,23 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-            {agents.map((agent, index) => (
+            {agents.map((agent, index) => {
+
+              const lastSeen = new Date(agent.last_seen).getTime();
+
+              const now = Date.now();
+
+              const isOnline = now - lastSeen < 15000;
+
+              return (
 
               <div
                 key={index}
-                className="bg-[#172036] rounded-3xl border border-white/5 p-6 hover:border-blue-500/30 transition-all duration-300"
+                className={`bg-[#172036] rounded-3xl border border-white/5 p-6 transition-all duration-300 ${
+                          isOnline
+                            ? "opacity-100"
+                            : "opacity-60 grayscale"
+                        }`}
               >
 
                 <div className="flex items-center justify-between mb-6">
@@ -215,15 +249,27 @@ export default function Home() {
                       Monitoring Agent
                     </p>
                     <p className="text-slate-500 text-xs mt-1">
-                    Last Seen: {new Date(agent.last_seen).toLocaleTimeString()}
-                  </p>
+                      Last Seen: {Math.floor((Date.now() - new Date(agent.last_seen).getTime()) / 1000)}s ago
+                    </p>
                   </div>
 
-                  <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium">
+                  <div
+                    className={`flex items-center gap-2 text-sm font-medium ${
+                      isOnline
+                        ? "text-emerald-400"
+                        : "text-red-400"
+                    }`}
+                  >
 
-                    <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        isOnline
+                          ? "bg-emerald-400"
+                          : "bg-red-400"
+                      }`}
+                    ></div>
 
-                    Online
+                    {isOnline ? "Online" : "Offline"}
 
                   </div>
 
@@ -241,7 +287,7 @@ export default function Home() {
                       </span>
 
                       <span className="text-blue-400 font-semibold">
-                        {agent.cpu}%
+                        {isOnline ? `${agent.cpu}%` : "--"}
                       </span>
 
                     </div>
@@ -250,7 +296,9 @@ export default function Home() {
 
                       <div
                         className="bg-blue-500 h-2 rounded-full"
-                        style={{ width: `${agent.cpu}%` }}
+                        style={{
+                          width: isOnline ? `${agent.cpu}%` : "0%"
+                        }}
                       ></div>
 
                     </div>
@@ -267,7 +315,7 @@ export default function Home() {
                       </span>
 
                       <span className="text-cyan-400 font-semibold">
-                        {agent.ram}%
+                        {isOnline ? `${agent.ram}%` : "--"}
                       </span>
 
                     </div>
@@ -276,7 +324,9 @@ export default function Home() {
 
                       <div
                         className="bg-cyan-500 h-2 rounded-full"
-                        style={{ width: `${agent.ram}%` }}
+                        style={{
+                          width: isOnline ? `${agent.ram}%` : "0%"
+                        }}
                       ></div>
 
                     </div>
@@ -287,7 +337,7 @@ export default function Home() {
 
               </div>
 
-            ))}
+            )})}
 
           </div>
 

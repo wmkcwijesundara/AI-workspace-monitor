@@ -13,8 +13,8 @@ while True:
     data = {
         "hostname": hostname,
         "cpu": psutil.cpu_percent(interval=1),
-        "ram":psutil.virtual_memory().percent
-        "last_seen": datetime.utcnow().isoformat()
+        "ram":psutil.virtual_memory().percent,
+        "last_seen": datetime.now().isoformat()
     }
 
     try:
