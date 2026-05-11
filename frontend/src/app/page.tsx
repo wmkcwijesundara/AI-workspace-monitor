@@ -34,6 +34,7 @@ interface AgentData {
   hostname: string;
   cpu: number;
   ram: number;
+  last_seen: string;
 }
 
 export default function Home() {
@@ -213,6 +214,9 @@ export default function Home() {
                     <p className="text-slate-400 text-sm mt-1">
                       Monitoring Agent
                     </p>
+                    <p className="text-slate-500 text-xs mt-1">
+                    Last Seen: {new Date(agent.last_seen).toLocaleTimeString()}
+                  </p>
                   </div>
 
                   <div className="flex items-center gap-2 text-emerald-400 text-sm font-medium">

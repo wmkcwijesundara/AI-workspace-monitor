@@ -2,6 +2,7 @@ import time
 import socket
 import requests
 import psutil
+from datetime import datetime
 
 SERVER_URL = "http://localhost:5000/api/report"
 
@@ -13,6 +14,7 @@ while True:
         "hostname": hostname,
         "cpu": psutil.cpu_percent(interval=1),
         "ram":psutil.virtual_memory().percent
+        "last_seen": datetime.utcnow().isoformat()
     }
 
     try:
