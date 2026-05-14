@@ -85,5 +85,47 @@ def uptime():
         "uptime": f"{hours}h {minutes}m"
     }
 
+@app.route('/api/ai-workspace')
+def ai_workspace():
+
+    ai_keywords = [
+        "chrome",
+        "cursor",
+        "ollama",
+        "lmstudio",
+        "code"
+    ]
+
+    detected = []
+
+    for proc in psutil.process_iter(['name', 'memory_percent']):
+
+        try:
+
+            name = proc.info['name']
+
+            if not name:
+                continue
+
+            lower_name = name.lower()
+
+            for keyword in ai_keywords:
+
+                if keyword in lower_name:
+
+                    detected.append({
+                        "name": name,
+                        "memory": round(proc.info['memory_percent'], 2)
+                    })
+
+                    break
+
+        except:
+            pass
+
+    return {
+        "tools": detected
+    }
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

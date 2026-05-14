@@ -37,6 +37,11 @@ interface AgentData {
   last_seen: string;
 }
 
+interface AIWorkspaceTool {
+  name: string;
+  memory: number;
+}
+
 export default function Home() {
   const [cpu, setCpu] = useState<number | null>(null);
   const [ram, setRam] = useState<RamDiskData | null>(null);
@@ -45,6 +50,7 @@ export default function Home() {
   const [cpuHistory, setCpuHistory] = useState<HistoryData[]>([]);
   const [agents, setAgents] = useState<AgentData[]>([]);
   const [uptime, setUptime] = useState<string>("");
+  const [aiTools, setAiTools] = useState<AIWorkspaceTool[]>([]);
 
   const fetchData = async () => {
     try {
@@ -66,12 +72,16 @@ export default function Home() {
       const uptimeRes = await fetch(`${API_URL}/api/uptime`);
       const uptimeData = await uptimeRes.json();
 
+      const aiWorkspaceRes = await fetch(`${API_URL}/api/ai-workspace`);
+      const aiWorkspaceData = await aiWorkspaceRes.json();
+
       setCpu(cpuData.cpu_usage);
       setRam(ramData);
       setDisk(diskData);
       setProcesses(processData);
       setAgents(agentsData.agents);
       setUptime(uptimeData.uptime);
+      setAiTools(aiWorkspaceData.tools);
 
       setCpuHistory((prev) => {
         const updated = [
@@ -342,6 +352,57 @@ export default function Home() {
           </div>
 
         </div>
+
+        <div className="bg-[#121A2B] border border-white/5 rounded-3xl p-6 shadow-2xl shadow-black/20 mb-8">
+
+        <div className="mb-6">
+
+          <h2 className="text-2xl font-bold">
+            AI Workspace Activity
+          </h2>
+
+          <p className="text-slate-400 text-sm mt-2">
+            AI-related applications currently consuming system resources
+          </p>
+
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {aiTools.map((tool, index) => (
+
+            <div
+              key={index}
+              className="bg-[#172036] rounded-2xl border border-white/5 p-5"
+            >
+
+              <div className="flex justify-between items-center">
+
+                <div>
+
+                  <p className="font-semibold text-white">
+                    {tool.name}
+                  </p>
+
+                  <p className="text-slate-400 text-sm mt-1">
+                    AI workspace process
+                  </p>
+
+                </div>
+
+                <div className="text-cyan-400 font-bold">
+                  {tool.memory.toFixed(1)}%
+                </div>
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </div>
 
         {/* CHART + PROCESSES */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
